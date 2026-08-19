@@ -16,9 +16,10 @@ import Alert from '@/components/ui/Alert';
 import { useBalance } from '@/hooks/useBalance';
 import { deleteMeal } from '@/services/meals';
 import { getProfile } from '@/services/profile';
-import { todayString, buildLedger, currentMonthKey, formatMonthLabel, formatCurrency } from '@/lib/utils';
+import { todayString, buildLedger, currentMonthKey, formatMonthLabel } from '@/lib/utils';
 import type { Meal, MealType } from '@/types';
 import Link from 'next/link';
+import HelperDashboardCard from '@/components/helpers/HelperDashboardCard';
 
 export default function DashboardPage() {
   const { meals, payments, summary, loading, error, refresh } = useBalance();
@@ -97,6 +98,9 @@ export default function DashboardPage() {
 
         {/* Pending invitations banner */}
         <PendingInvitations />
+
+        {/* Helper shortcut — shown only when this user helps someone else */}
+        <HelperDashboardCard />
 
         {/* Hero balance card */}
         <BalanceCard summary={summary} userName={userName} />
