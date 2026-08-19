@@ -1,8 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Strict React mode
   reactStrictMode: true,
+  // Allow mobile devices on the same LAN to access the dev server
+  allowedDevOrigins: ['172.17.224.1', '192.168.0.0/16', '10.0.0.0/8'],
 
   // Security headers applied to every route
   async headers() {
