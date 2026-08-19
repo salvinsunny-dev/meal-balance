@@ -1,46 +1,110 @@
 @import "tailwindcss";
 
+/* ── Design tokens ────────────────────────────────────────────────────────── */
 :root {
-  --background: #f9fafb;
-  --foreground: #111827;
+  --bg-base:        #f0f2f8;
+  --bg-surface:     #ffffff;
+  --bg-elevated:    #f7f8fc;
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --brand:          #4f46e5;
+  --brand-light:    #eef2ff;
+  --brand-dark:     #3730a3;
+  --success:        #059669;
+  --danger:         #dc2626;
+  --warning:        #d97706;
+  --border:         #e2e8f0;
+  --shadow-sm:      0 1px 3px 0 rgb(0 0 0/0.06), 0 1px 2px -1px rgb(0 0 0/0.06);
+  --shadow-md:      0 4px 6px -1px rgb(0 0 0/0.08), 0 2px 4px -2px rgb(0 0 0/0.05);
+  --shadow-lg:      0 10px 15px -3px rgb(0 0 0/0.08), 0 4px 6px -4px rgb(0 0 0/0.05);
+  --shadow-xl:      0 20px 25px -5px rgb(0 0 0/0.08), 0 8px 10px -6px rgb(0 0 0/0.04);
 }
 
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+html, body { height: 100%; }
+
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ensure full height for app shell */
-html,
-body,
-#__next {
-  height: 100%;
-}
-
-/* Remove number input spinners */
+/* ── Number inputs ────────────────────────────────────────────────────────── */
 input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type='number'] {
-  -moz-appearance: textfield;
+input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type='number'] { -moz-appearance: textfield; }
+
+/* ── Focus ring ───────────────────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ── Scrollbar hide utility ───────────────────────────────────────────────── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Smooth transitions (selective — not on all) ─────────────────────────── */
+button, a, input, select, textarea {
+  transition: background-color 150ms ease, border-color 150ms ease,
+              color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
 }
 
-/* Focus ring consistent across browsers */
-:focus-visible {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+/* ── Glass card ───────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-/* Smooth page transitions */
-* {
-  transition-property: background-color, border-color, color, fill, stroke,
-    opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+/* ── Number counter animation ─────────────────────────────────────────────── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count { animation: countUp 0.35s ease forwards; }
+
+/* ── Slide up (modal/sheet entrance) ──────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.25s ease forwards; }
+
+/* ── Fade in ──────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in { animation: fadeIn 0.2s ease forwards; }
+
+/* ── Premium gradient backgrounds ────────────────────────────────────────── */
+.gradient-brand {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 60%, #a855f7 100%);
+}
+.gradient-meal {
+  background: linear-gradient(135deg, #0ea5e9 0%, #4f46e5 100%);
+}
+.gradient-expense {
+  background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+}
+.gradient-insight {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+/* ── Safe area bottom (iOS notch) ─────────────────────────────────────────── */
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ── Stat card shimmer (loading skeleton) ────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 0.5rem;
 }

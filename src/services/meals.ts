@@ -44,7 +44,7 @@ export async function getMealsByRange(from: string, to: string): Promise<Meal[]>
 }
 
 /** Add a new meal — duplicates are also blocked by the DB unique constraint */
-export async function addMeal(formData: MealFormData): Promise<Meal> {
+export async function addMeal(formData: MealFormData, onBehalfOfUserId?: string): Promise<Meal> {
   const supabase = createClient();
   const {
     data: { user },
@@ -52,10 +52,13 @@ export async function addMeal(formData: MealFormData): Promise<Meal> {
 
   if (!user) throw new Error('Not authenticated');
 
+  const targetUserId = onBehalfOfUserId ?? user.id;
+
   // Check for duplicate before inserting (friendly error message)
   const { data: existing } = await supabase
     .from('meals')
     .select('id')
+    .eq('user_id', targetUserId)
     .eq('meal_date', formData.meal_date)
     .eq('meal_type', formData.meal_type)
     .maybeSingle();
@@ -69,11 +72,12 @@ export async function addMeal(formData: MealFormData): Promise<Meal> {
   const { data, error } = await supabase
     .from('meals')
     .insert({
-      user_id: user.id,
+      user_id:   targetUserId,
+      added_by:  user.id,
       meal_type: formData.meal_type,
       meal_date: formData.meal_date,
       meal_time: formData.meal_time,
-      amount: DEFAULT_SETTINGS.meal_price,
+      amount:    DEFAULT_SETTINGS.meal_price,
     })
     .select()
     .single();

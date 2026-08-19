@@ -1,11 +1,11 @@
 {
-  "name": "MealBalance",
-  "short_name": "MealBalance",
-  "description": "Track your meals and outstanding balance easily",
+  "name": "ChoreKanakku",
+  "short_name": "ChoreKanakku",
+  "description": "Track daily meals and monthly expenses — all in one place",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#6366f1",
+  "background_color": "#f0f2f8",
+  "theme_color": "#4f46e5",
   "orientation": "portrait-primary",
   "categories": ["finance", "utilities", "food"],
   "icons": [
@@ -19,19 +19,8 @@
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
   ],
   "shortcuts": [
-    {
-      "name": "Add Meal",
-      "short_name": "Add Meal",
-      "description": "Go to dashboard to add a meal",
-      "url": "/dashboard",
-      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "View History",
-      "short_name": "History",
-      "description": "View your meal and payment history",
-      "url": "/history",
-      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
-    }
+    { "name": "Add Meal",    "url": "/dashboard", "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }] },
+    { "name": "Add Expense", "url": "/expenses",  "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }] },
+    { "name": "Insights",    "url": "/insights",  "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }] }
   ]
 }

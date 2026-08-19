@@ -32,6 +32,7 @@ function makeMeal(overrides: Partial<Meal> = {}): Meal {
     meal_date:  overrides.meal_date  ?? '2026-08-17',
     meal_time:  overrides.meal_time  ?? '08:00',
     amount:     overrides.amount     ?? DEFAULT_SETTINGS.meal_price,
+    added_by:   overrides.added_by   ?? overrides.user_id ?? 'user-a',
     created_at: overrides.created_at ?? '2026-08-17T08:00:00Z',
     updated_at: overrides.updated_at ?? '2026-08-17T08:00:00Z',
   };

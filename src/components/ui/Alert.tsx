@@ -9,32 +9,28 @@ interface AlertProps {
   className?: string;
 }
 
-const styles: Record<AlertVariant, string> = {
-  error:   'bg-red-50 text-red-800 border-red-200',
-  success: 'bg-green-50 text-green-800 border-green-200',
-  warning: 'bg-amber-50 text-amber-800 border-amber-200',
-  info:    'bg-blue-50 text-blue-800 border-blue-200',
-};
-
-const icons: Record<AlertVariant, string> = {
-  error:   '✕',
-  success: '✓',
-  warning: '⚠',
-  info:    'ℹ',
+const styles: Record<AlertVariant, { wrapper: string; icon: string }> = {
+  error:   { wrapper: 'bg-red-50 text-red-800 border-red-200',     icon: '✕' },
+  success: { wrapper: 'bg-emerald-50 text-emerald-800 border-emerald-200', icon: '✓' },
+  warning: { wrapper: 'bg-amber-50 text-amber-800 border-amber-200', icon: '!' },
+  info:    { wrapper: 'bg-blue-50 text-blue-800 border-blue-200',   icon: 'i' },
 };
 
 export default function Alert({ variant = 'error', message, className }: AlertProps) {
+  const { wrapper, icon } = styles[variant];
   return (
     <div
       role="alert"
       className={cn(
-        'flex items-start gap-2 rounded-xl border px-4 py-3 text-sm',
-        styles[variant],
+        'flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-sm animate-fade-in',
+        wrapper,
         className,
       )}
     >
-      <span className="mt-0.5 shrink-0 font-bold">{icons[variant]}</span>
-      <span>{message}</span>
+      <span className="shrink-0 w-5 h-5 rounded-full border border-current flex items-center justify-center text-xs font-bold mt-0.5">
+        {icon}
+      </span>
+      <span className="leading-relaxed">{message}</span>
     </div>
   );
 }

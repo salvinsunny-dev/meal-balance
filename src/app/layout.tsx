@@ -2,14 +2,14 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'MealBalance — Track Your Meals & Payments',
+  title: 'ChoreKanakku — Meals & Expense Tracker',
   description:
-    'A personal meal and balance tracker. Record meals at ₹50 each, log payments, and always know your outstanding balance.',
+    'Track daily meals at ₹50 each, record payments, and manage your monthly expenses — all in one place.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'MealBalance',
+    title: 'ChoreKanakku',
   },
   icons: {
     icon: '/icons/icon-192.png',
@@ -21,17 +21,13 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#6366f1',
+  themeColor: '#4f46e5',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
+      <body className="min-h-screen antialiased" style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
         {children}
       </body>
     </html>

@@ -1,20 +1,22 @@
 import React from 'react';
+import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
 
-/** Centered auth layout — works on both mobile and desktop */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 py-12">
-      {/* Logo / brand mark */}
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+         style={{ background: 'linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf4ff 100%)' }}>
+
+      {/* Brand mark */}
       <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-indigo-600 shadow-lg mb-3">
-          <span className="text-2xl">🍽️</span>
+        <div className="inline-flex items-center justify-center h-16 w-16 rounded-3xl bg-indigo-600 shadow-lg shadow-indigo-200 mb-4">
+          <span className="text-3xl">🍽️</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">MealBalance</h1>
-        <p className="text-sm text-gray-500 mt-1">Track meals. Know your balance.</p>
+        <h1 className="text-2xl font-black text-gray-900">{APP_NAME}</h1>
+        <p className="text-sm text-gray-400 mt-1">{APP_TAGLINE}</p>
       </div>
 
-      {/* Auth card */}
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+      {/* Card */}
+      <div className="w-full max-w-sm bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-100/50 border border-white p-7">
         {children}
       </div>
     </div>
