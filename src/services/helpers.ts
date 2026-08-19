@@ -95,26 +95,43 @@ export async function getMyHelperAccess(): Promise<HelperInvitation[]> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
+  // Fetch invitations where I am the helper
   const { data, error } = await supabase
     .from('helper_invitations')
     .select('*')
     .eq('helper_user_id', user.id)
     .eq('status', 'accepted');
   if (error) throw new Error(error.message);
-  return data as HelperInvitation[];
+  return (data ?? []) as HelperInvitation[];
 }
 
-/** Accept an invitation */
+/** Accept an invitation.
+ *  Also calls the DB function create_reverse_invitation() which creates the
+ *  reverse row so the original invitee can NOW also add meals for the owner —
+ *  making the connection two-way automatically. No second invitation needed.
+ */
 export async function acceptInvitation(invitationId: string): Promise<void> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { error } = await supabase
+  // Step 1 — Mark invitation as accepted and record who accepted
+  const { error: acceptError } = await supabase
     .from('helper_invitations')
     .update({ status: 'accepted', helper_user_id: user.id })
     .eq('id', invitationId);
-  if (error) throw new Error(error.message);
+  if (acceptError) throw new Error(acceptError.message);
+
+  // Step 2 — Create the reverse invitation via the SECURITY DEFINER function
+  // This lets the original owner also add meals for the helper (two-way)
+  const { error: reverseError } = await supabase.rpc(
+    'create_reverse_invitation',
+    { p_original_invitation_id: invitationId },
+  );
+  // Non-fatal: reverse creation failing should not break the accept flow
+  if (reverseError) {
+    console.warn('Could not create reverse invitation:', reverseError.message);
+  }
 }
 
 /** Decline an invitation */
@@ -127,13 +144,28 @@ export async function declineInvitation(invitationId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-/** Get display name of an owner by user_id (for helper UI) */
-export async function getOwnerName(ownerId: string): Promise<string> {
+/**
+ * Get display name of any user by user_id.
+ * After migration 005, connected users can read each other's profiles.
+ * Falls back to email-prefix if display_name is null, then to fallbackEmail param.
+ */
+export async function getOwnerName(
+  userId: string,
+  fallbackEmail?: string,
+): Promise<string> {
   const supabase = createClient();
   const { data } = await supabase
     .from('profiles')
     .select('display_name')
-    .eq('user_id', ownerId)
+    .eq('user_id', userId)
     .maybeSingle();
-  return data?.display_name ?? 'Unknown';
+
+  if (data?.display_name) return data.display_name;
+  if (fallbackEmail) return fallbackEmail.split('@')[0];
+  return 'Friend';
+}
+
+/** Derive a readable name from an email address (part before @) */
+export function nameFromEmail(email: string): string {
+  return email.split('@')[0] ?? email;
 }

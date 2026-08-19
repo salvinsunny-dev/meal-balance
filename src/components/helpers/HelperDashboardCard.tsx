@@ -22,7 +22,10 @@ export default function HelperDashboardCard() {
       const raw = await getMyHelperAccess();
       if (raw.length === 0) { setLoaded(true); return; }
       const enriched = await Promise.all(
-        raw.map(async (inv) => ({ ...inv, ownerName: await getOwnerName(inv.owner_id) })),
+        raw.map(async (inv) => ({
+          ...inv,
+          ownerName: await getOwnerName(inv.owner_id, inv.invitee_email),
+        })),
       );
       setAccessList(enriched);
     } catch {

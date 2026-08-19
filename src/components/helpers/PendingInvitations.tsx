@@ -29,7 +29,7 @@ export default function PendingInvitations() {
       const enriched = await Promise.all(
         raw.map(async (inv) => ({
           ...inv,
-          ownerName: await getOwnerName(inv.owner_id),
+          ownerName: await getOwnerName(inv.owner_id, inv.invitee_email),
         })),
       );
       setInvitations(enriched);

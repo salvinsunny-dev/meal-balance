@@ -52,10 +52,12 @@ export default function ConnectedHelpers() {
       setSentInvitations(sent);
 
       // Enrich helper access with owner names
+      // Pass owner's invitee_email from the reverse invitation as fallback
+      // so name shows even if profile RLS migration hasn't run yet
       const enriched = await Promise.all(
         access.map(async (inv) => ({
           ...inv,
-          ownerName: await getOwnerName(inv.owner_id),
+          ownerName: await getOwnerName(inv.owner_id, inv.invitee_email),
         })),
       );
       setHelperAccess(enriched);
