@@ -19,9 +19,30 @@ const mealGradients: Record<MealType, string> = {
   Night:     'from-indigo-500 to-purple-600',
 };
 
+/**
+ * Each meal type becomes available at a specific hour (24h).
+ * Before that hour the row is shown as "coming up" — greyed out, no add button.
+ * After that hour the add button appears (or edit/delete if already recorded).
+ */
+const MEAL_AVAILABLE_FROM: Record<MealType, number> = {
+  Morning:   8,   // available from 8:00 AM
+  Afternoon: 12,  // available from 12:00 PM
+  Evening:   17,  // available from 5:00 PM
+  Night:     20,  // available from 8:00 PM
+};
+
+/** Human-readable "available from" label */
+const MEAL_FROM_LABEL: Record<MealType, string> = {
+  Morning:   'from 8 AM',
+  Afternoon: 'from 12 PM',
+  Evening:   'from 5 PM',
+  Night:     'from 8 PM',
+};
+
 export default function TodayMeals({ todayMeals, onAdd, onEdit, onDelete }: TodayMealsProps) {
-  const today        = todayString();
-  const recordedSet  = new Set(todayMeals.map((m) => m.meal_type));
+  const today       = todayString();
+  const recordedSet = new Set(todayMeals.map((m) => m.meal_type));
+  const currentHour = new Date().getHours();
   const { currency, meal_price } = DEFAULT_SETTINGS;
 
   return (
@@ -44,28 +65,43 @@ export default function TodayMeals({ todayMeals, onAdd, onEdit, onDelete }: Toda
       {/* Meal rows */}
       <ul className="divide-y divide-gray-50">
         {MEAL_TYPES.map((type) => {
-          const meal     = todayMeals.find((m) => m.meal_type === type);
-          const recorded = recordedSet.has(type);
+          const meal      = todayMeals.find((m) => m.meal_type === type);
+          const recorded  = recordedSet.has(type);
+          const available = currentHour >= MEAL_AVAILABLE_FROM[type];
 
           return (
-            <li key={type} className="flex items-center gap-3 px-4 py-3">
+            <li
+              key={type}
+              className={`flex items-center gap-3 px-4 py-3 transition-opacity ${
+                !available && !recorded ? 'opacity-50' : ''
+              }`}
+            >
               {/* Icon */}
-              <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${mealGradients[type]} flex items-center justify-center text-lg shrink-0 shadow-sm`}>
+              <div className={`h-9 w-9 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm ${
+                available || recorded
+                  ? `bg-gradient-to-br ${mealGradients[type]}`
+                  : 'bg-gray-100'
+              }`}>
                 {MEAL_ICONS[type]}
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800">{type}</p>
-                {meal ? (
+                <p className={`text-sm font-semibold ${available || recorded ? 'text-gray-800' : 'text-gray-400'}`}>
+                  {type}
+                </p>
+                {recorded && meal ? (
                   <p className="text-xs text-gray-400">{meal.meal_time}</p>
-                ) : (
+                ) : available ? (
                   <p className="text-xs text-gray-300">Not recorded</p>
+                ) : (
+                  <p className="text-xs text-gray-300">Available {MEAL_FROM_LABEL[type]}</p>
                 )}
               </div>
 
               {/* Action */}
               {recorded && meal ? (
+                /* Already recorded — show amount + edit + delete */
                 <div className="flex items-center gap-1 shrink-0">
                   <span className="text-sm font-bold text-emerald-600">
                     {formatCurrency(meal.amount, currency)}
@@ -89,15 +125,21 @@ export default function TodayMeals({ todayMeals, onAdd, onEdit, onDelete }: Toda
                     </svg>
                   </button>
                 </div>
-              ) : (
+              ) : available ? (
+                /* Time has come — show add button */
                 <button
                   onClick={() => onAdd(type)}
-                  className={`shrink-0 flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-gradient-to-r ${mealGradients[type]} text-white shadow-sm hover:shadow-md transition-shadow`}
+                  className={`shrink-0 flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-gradient-to-r ${mealGradients[type]} text-white shadow-sm hover:shadow-md active:scale-95 transition-all`}
                   aria-label={`Add ${type}`}
                 >
                   <span>+</span>
                   <span>{formatCurrency(meal_price, currency)}</span>
                 </button>
+              ) : (
+                /* Too early — show locked badge */
+                <span className="shrink-0 text-xs text-gray-300 bg-gray-50 border border-gray-100 px-2.5 py-1.5 rounded-xl">
+                  {MEAL_FROM_LABEL[type]}
+                </span>
               )}
             </li>
           );
